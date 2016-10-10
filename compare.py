@@ -4,7 +4,12 @@ import pprint
 import json
 
 url = 'https://api.discogs.com/users/{0}/collection/folders/0/releases?page={1}'
+
 pp = pprint.PrettyPrinter()
+
+headers = {
+  'User-Agent': 'CompareUsers/0.1'
+}
 
 def get_collection(username):
   collection = set();
@@ -29,7 +34,9 @@ def compare_collections(username1, username2):
   collection2 = get_collection(username2)
   
   result = collection1.intersection(collection2)
-  pp.pprint(result)
+  print ("Releases in common between {0} and {1}".format(username1, username2))
+  for album in result:
+    print (album)
 
 if len(sys.argv) > 1 and sys.argv[1] == '--help':
   print ("Usage: compare.py username1 username2")
@@ -46,6 +53,4 @@ if user1.lower() == user2.lower():
   print ("The two users are the same")
   sys.exit()
 
-headers = {
-  'User-Agent': 'CompareUsers/0.1'
-}
+compare_collections(user1, user2)
