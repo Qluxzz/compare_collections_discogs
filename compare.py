@@ -34,7 +34,7 @@ def compare_collections(username1, username2):
   collection2 = get_collection(username2)
   
   result = collection1.intersection(collection2)
-  print ("Releases in common between {0} and {1}".format(username1, username2))
+  print ("Releases in common between {0} and {1}:".format(username1, username2))
   for album in result:
     print (album)
 
