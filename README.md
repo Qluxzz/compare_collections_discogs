@@ -5,5 +5,6 @@ Script to compare two users' collections on discogs and see what they have in co
 Requests
 
 # Usage
-The script takes two arguments, two username
+The script takes two arguments, two usernames
+
 Example: compare.py username1 username
