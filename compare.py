@@ -2,6 +2,7 @@ import requests
 import sys
 import pprint
 import json
+import time
 
 url = 'https://api.discogs.com/users/{0}/collection/folders/0/releases?page={1}'
 
@@ -11,11 +12,16 @@ headers = {
   'User-Agent': 'CompareUsers/0.1'
 }
 
+def print_incremental(text):
+  sys.stdout.write('Releases: {0}\r'.format(text))
+  sys.stdout.flush()
+
 def get_collection(username):
   collection = set();
   pages = 1
   current_page = 0
   while current_page < pages:
+    
     r = requests.get(url.format(username, current_page) , headers=headers)
     
     if r.status_code == 200:
@@ -26,15 +32,21 @@ def get_collection(username):
       
       for release in j["releases"]:
         collection.add(release["basic_information"]["title"])
-        
+        print_incremental(len(collection))
+    time.sleep(0.25)
+  print_incremental(len(collection))
+  print("")
   return collection
   
 def compare_collections(username1, username2):
+  print ("Getting {0}'s collection".format(username1))
   collection1 = get_collection(username1)
+  print ("Getting {0}'s collection".format(username2))
   collection2 = get_collection(username2)
-  
+  print ("Comparing collections")
   result = collection1.intersection(collection2)
   print ("Releases in common between {0} and {1}:".format(username1, username2))
+  print (len(result))
   for album in result:
     print (album)
 
