@@ -3,6 +3,7 @@ import sys
 import pprint
 import json
 import time
+from operator import itemgetter
 
 url = 'https://api.discogs.com/users/{0}/collection/folders/0/releases?page={1}'
 
@@ -31,13 +32,41 @@ def get_collection(username):
       current_page += 1
       
       for release in j["releases"]:
-        collection.add(release["basic_information"]["title"])
+        info = release["basic_information"]
+        title = info["title"]
+        artist = info["artists"][0]["name"]
+        collection.add((artist, title))
         print_incremental(len(collection))
     time.sleep(0.25)
   print_incremental(len(collection))
   print("")
   return collection
-  
+
+def get_longest_artist_name(results):
+  current_longest = 0
+  for result in results:
+    if len(result[0]) > current_longest:
+      current_longest = len(result[0])
+  return current_longest
+
+def print_results(results, username1, username2):
+  if len(results) == 0:
+    print ("No releases in common")
+    return
+  print ("Releases in common between {0} and {1}: {2}".format(username1, username2, len(results)))
+  longest_artist = get_longest_artist_name(results)
+  print ("Artist", end="")
+  for x in range(len("Artist"), longest_artist):
+     print("-", end="")
+  print("|Album")
+  for result in results:
+   length = len(result[0])
+   print (result[0], end="")
+   for x in range(length, longest_artist):
+     print (" ", end="")
+   print ("|", end="")
+   print (result[1])
+
 def compare_collections(username1, username2):
   print ("Getting {0}'s collection".format(username1))
   collection1 = get_collection(username1)
@@ -45,10 +74,8 @@ def compare_collections(username1, username2):
   collection2 = get_collection(username2)
   print ("Comparing collections")
   result = collection1.intersection(collection2)
-  print ("Releases in common between {0} and {1}:".format(username1, username2))
-  print (len(result))
-  for album in result:
-    print (album)
+  print_results(result, username1, username2)
+
 
 if len(sys.argv) > 1 and sys.argv[1] == '--help':
   print ("Usage: compare.py username1 username2")
