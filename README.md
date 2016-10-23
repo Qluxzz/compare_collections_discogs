@@ -1,5 +1,5 @@
 # compare_collections_discogs
-Script to compare two users' collections on discogs and see what they have in common
+Script to compare two users' collections on Discogs and see what they have in common
 
 # Dependencies
 Requests
